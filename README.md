@@ -6,6 +6,22 @@ Este repositorio  corresponde  únicamente corresponde a una prueba técnica per
 
 ## Local
 El proyecto tiene un Datastore local para persistencia de datos. Por decfecto para probar de manera local.
+Para correr el proyecto local es necesario levantar la base de datos en docker con el comando docker run -p 8000:8000 amazon/dynamodb-local
+
+ Cambiar la configuracion del bean  en el archivo DynamoDBConfig y colocarlo asi 
+     @Bean
+    public DynamoDbClient dynamoDbClient() {
+        return DynamoDbClient.builder()
+                .endpointOverride(URI.create("http://localhost:8000"))
+                .region(Region.US_EAST_1)
+                .credentialsProvider(
+                        StaticCredentialsProvider.create(
+                                AwsBasicCredentials.create("dummy", "dummy")
+                        )
+                )
+                .build();
+    }
+
 
 ## Architecture
 
@@ -19,7 +35,8 @@ The system allows clients to subscribe and cancel investment funds while validat
 - Lombok
 - JUnit
 - Mockito
-
+- AWS dynamodb
+- AWS Elastic Beanstalk
 ---
 
 ## Architecture Diagram
