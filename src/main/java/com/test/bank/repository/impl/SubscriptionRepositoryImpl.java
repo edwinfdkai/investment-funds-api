@@ -3,23 +3,44 @@ package com.test.bank.repository.impl;
 import com.test.bank.model.Subscription;
 import com.test.bank.repository.SubscriptionRepository;
 import org.springframework.stereotype.Repository;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.Key;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-import java.util.HashMap;
-import java.util.Map;
 
 @Repository
 public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
-    private final Map<String, Subscription> subscriptions = new HashMap<>();
+    private final DynamoDbTable<Subscription> table;
 
-    @Override
-    public void save(Subscription subscription) {
-        String key = subscription.getClientId() + "-" + subscription.getFundId();
-        subscriptions.put(key, subscription);
+    public SubscriptionRepositoryImpl(DynamoDbClient dynamoDbClient) {
+
+        DynamoDbEnhancedClient enhancedClient =
+                DynamoDbEnhancedClient.builder()
+                        .dynamoDbClient(dynamoDbClient)
+                        .build();
+
+        this.table = enhancedClient.table(
+                "subscriptions",
+                TableSchema.fromBean(Subscription.class)
+        );
     }
 
     @Override
-    public Subscription find(Long clientId, Long fundId) {
-        return subscriptions.get(clientId + "-" + fundId);
+    public void save(Subscription subscription) {
+        table.putItem(subscription);
+    }
+
+    @Override
+    public Subscription find(String clientId, String fundId) {
+
+        return table.getItem(
+                Key.builder()
+                        .partitionValue(clientId)
+                        .sortValue(fundId)
+                        .build()
+        );
     }
 }

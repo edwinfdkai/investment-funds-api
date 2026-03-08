@@ -44,8 +44,8 @@ class FundControllerTest {
     void shouldSubscribeToFund() throws Exception {
 
         SubscriptionRequest request = new SubscriptionRequest();
-        request.setClientId(1L);
-        request.setFundId(100L);
+        request.setClientId("1L");
+        request.setFundId("100L");
 
         doNothing().when(fundService).subscribeToFund(request);
 
@@ -61,8 +61,8 @@ class FundControllerTest {
     void shouldCancelSubscription() throws Exception {
 
         CancelRequest request = new CancelRequest();
-        request.setClientId(1L);
-        request.setFundId(100L);
+        request.setClientId("1L");
+        request.setFundId("100L");
 
         doNothing().when(fundService).cancelFund(request);
 
@@ -77,7 +77,7 @@ class FundControllerTest {
     @Test
     void shouldReturnFunds() throws Exception {
 
-        Fund fund = new Fund(1L, "Fund A", (long) 500000.0, "FPV");
+        Fund fund = new Fund("1L", "Fund A", (long) 500000.0, "FPV");
 
         when(fundService.getFunds()).thenReturn(List.of(fund));
 
@@ -91,14 +91,14 @@ class FundControllerTest {
 
         Transaction transaction = new Transaction(
                 "1",
-                1L,
-                100L,
+                "1L",
+                "100L",
                 "OPENING",
                 (long) 500000.0,
                 null
         );
 
-        when(transactionService.history(1L)).thenReturn(List.of(transaction));
+        when(transactionService.history("1")).thenReturn(List.of(transaction));
 
         mockMvc.perform(get("/funds/1/transacciones"))
                 .andExpect(status().isOk())

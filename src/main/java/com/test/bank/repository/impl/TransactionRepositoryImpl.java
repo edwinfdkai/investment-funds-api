@@ -3,6 +3,10 @@ package com.test.bank.repository.impl;
 import com.test.bank.model.Transaction;
 import com.test.bank.repository.TransactionRepository;
 import org.springframework.stereotype.Repository;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
+import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,18 +14,36 @@ import java.util.List;
 @Repository
 public class TransactionRepositoryImpl implements TransactionRepository {
 
-    private final List<Transaction> transactions = new ArrayList<>();
+    private final DynamoDbTable<Transaction> table;
 
-    @Override
-    public void save(Transaction transaction) {
-        transactions.add(transaction);
+    public TransactionRepositoryImpl(DynamoDbClient dynamoDbClient) {
+
+        DynamoDbEnhancedClient enhancedClient =
+                DynamoDbEnhancedClient.builder()
+                        .dynamoDbClient(dynamoDbClient)
+                        .build();
+
+        this.table = enhancedClient.table(
+                "transactions",
+                TableSchema.fromBean(Transaction.class)
+        );
     }
 
     @Override
-    public List<Transaction> findByClientId(Long clientId) {
+    public void save(Transaction transaction) {
+        table.putItem(transaction);
+    }
 
-        return transactions.stream()
+    @Override
+    public List<Transaction> findByClientId(String clientId) {
+
+        List<Transaction> result = new ArrayList<>();
+
+        table.scan().items()
+                .stream()
                 .filter(t -> t.getClientId().equals(clientId))
-                .toList();
+                .forEach(result::add);
+
+        return result;
     }
 }

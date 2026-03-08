@@ -26,15 +26,15 @@ class TransactionServiceTest {
     @InjectMocks
     private TransactionService transactionService;
 
-    private Long testClientId;
-    private Long testFundId;
+    private String testClientId;
+    private String testFundId;
     private String testType;
     private Long testAmount;
 
     @BeforeEach
     void setUp() {
-        testClientId = 1L;
-        testFundId = 1L;
+        testClientId = "1L";
+        testFundId = "1L";
         testType = "OPENING";
         testAmount = 500L;
     }
@@ -44,7 +44,7 @@ class TransactionServiceTest {
     void register_Successful() {
         transactionService.register(testClientId, testFundId, testType, testAmount);
 
-        verify(transactionRepository).save(any(Transaction.class));  // Se llama a save con una transacción
+        verify(transactionRepository).save(any(Transaction.class));
 
         verify(transactionRepository).save(argThat(transaction ->
                 transaction.getClientId().equals(testClientId) &&

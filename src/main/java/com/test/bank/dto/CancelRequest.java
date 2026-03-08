@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class CancelRequest {
 
-    private Long clientId;
-    private Long fundId;
+    private String clientId;
+    private String fundId;
 }

@@ -6,5 +6,5 @@ public interface SubscriptionRepository {
 
     void save(Subscription subscription);
 
-    Subscription find(Long clientId, Long fundId);
+    Subscription find(String clientId, String fundId);
 }

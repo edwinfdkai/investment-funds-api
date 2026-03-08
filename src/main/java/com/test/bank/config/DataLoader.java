@@ -16,23 +16,23 @@ public class DataLoader implements CommandLineRunner {
     private final FundRepository fundRepository;
 
     @Override
-    public void run(String  ... args) {
+    public void run(String... args) {
 
         Client client = new Client(
-                1L,
+                "1",
                 "Edwin Caicedo",
-                "edwin@test.com",
-                "300123456",
+                "edwinfdfull@gmail.com",
+                "+57300123456",
                 500000L,
                 "EMAIL"
         );
 
         clientRepository.save(client);
 
-        fundRepository.save(new Fund(1L,"PRU_TEST_PACTUAL_RECAUDADORA",75000L,"PRU"));
-        fundRepository.save(new Fund(2L,"PRU_TEST_PACTUAL_ECOPETROL",125000L,"PRU"));
-        fundRepository.save(new Fund(3L,"DEUDAPRIVADA",50000L,"TIC"));
-        fundRepository.save(new Fund(4L,"FDO-ACCIONES",250000L,"TIC"));
-        fundRepository.save(new Fund(5L,"PRU_TEST_PACTUAL_DINAMICA",100000L,"PRU"));
+        fundRepository.save(new Fund("1","PRU_TEST_PACTUAL_RECAUDADORA",75000L,"PRU"));
+        fundRepository.save(new Fund("2","PRU_TEST_PACTUAL_ECOPETROL",125000L,"PRU"));
+        fundRepository.save(new Fund("3","DEUDAPRIVADA",50000L,"TIC"));
+        fundRepository.save(new Fund("4","FDO-ACCIONES",250000L,"TIC"));
+        fundRepository.save(new Fund("5","PRU_TEST_PACTUAL_DINAMICA",100000L,"PRU"));
     }
 }

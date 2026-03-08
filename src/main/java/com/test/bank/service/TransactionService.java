@@ -15,7 +15,7 @@ public class TransactionService {
 
     private final TransactionRepository transactionRepository;
 
-    public void register(Long clientId, Long fundId, String type, Long amount){
+    public void register(String clientId, String fundId, String type, Long amount){
 
         Transaction transaction = new Transaction();
 
@@ -29,7 +29,7 @@ public class TransactionService {
         transactionRepository.save(transaction);
     }
 
-    public List<Transaction> history(Long clientId){
+    public List<Transaction> history(String clientId){
         return transactionRepository.findByClientId(clientId);
     }
 }

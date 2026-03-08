@@ -55,35 +55,35 @@ class FundServiceTest {
     @BeforeEach
     void setUp() {
         testClient = new Client();
-        testClient.setId(1L);
+        testClient.setId("1");
         testClient.setBalance(1000L);
         testClient.setEmail("test@email.com");
         testClient.setPhone("123456789");
         testClient.setNotificationPreference("EMAIL");
 
-        testFund = new Fund(1L, "Test Fund", 500L, "Categoria");
+        testFund = new Fund("1", "Test Fund", 500L, "Categoria");
 
         subscriptionRequest = new SubscriptionRequest();
-        subscriptionRequest.setClientId(1L);
-        subscriptionRequest.setFundId(1L);
+        subscriptionRequest.setClientId("1");
+        subscriptionRequest.setFundId("1");
 
         cancelRequest = new CancelRequest();
-        cancelRequest.setClientId(1L);
-        cancelRequest.setFundId(1L);
+        cancelRequest.setClientId("1");
+        cancelRequest.setFundId("1");
     }
 
 
     @Test
     void subscribeToFund_Successful_WithEmailNotification() {
-        when(clientRepository.findById(1L)).thenReturn(testClient);
-        when(fundRepository.findById(1L)).thenReturn(testFund);
-        when(subscriptionRepository.find(1L, 1L)).thenReturn(null);  // No existe suscripción previa
+        when(clientRepository.findById("1")).thenReturn(testClient);
+        when(fundRepository.findById("1")).thenReturn(testFund);
+        when(subscriptionRepository.find("1", "1")).thenReturn(null);  // No existe suscripción previa
 
         fundService.subscribeToFund(subscriptionRequest);
 
         assertEquals(500L, testClient.getBalance());  // Saldo actualizado
         verify(subscriptionRepository).save(any(Subscription.class));
-        verify(transactionService).register(1L, 1L, "OPENING", 500L);
+        verify(transactionService).register("1", "1", "OPENING", 500L);
         verify(emailNotificationService).sendNotification(anyString(), eq("test@email.com"));
         verify(smsNotificationService, never()).sendNotification(anyString(), anyString());  // No se llama SMS
     }
@@ -92,9 +92,9 @@ class FundServiceTest {
     void subscribeToFund_Successful_WithSmsNotification() {
         testClient.setNotificationPreference("SMS");  // Cambia preferencia
 
-        when(clientRepository.findById(1L)).thenReturn(testClient);
-        when(fundRepository.findById(1L)).thenReturn(testFund);
-        when(subscriptionRepository.find(1L, 1L)).thenReturn(null);
+        when(clientRepository.findById("1")).thenReturn(testClient);
+        when(fundRepository.findById("1")).thenReturn(testFund);
+        when(subscriptionRepository.find("1", "1")).thenReturn(null);
 
         fundService.subscribeToFund(subscriptionRequest);
 
@@ -104,7 +104,7 @@ class FundServiceTest {
 
     @Test
     void subscribeToFund_ThrowsException_ClientNotFound() {
-        when(clientRepository.findById(1L)).thenReturn(null);
+        when(clientRepository.findById("1")).thenReturn(null);
 
         BusinessException exception = assertThrows(BusinessException.class, () -> fundService.subscribeToFund(subscriptionRequest));
         assertEquals("Client not found", exception.getMessage());
@@ -112,8 +112,8 @@ class FundServiceTest {
 
     @Test
     void subscribeToFund_ThrowsException_FundNotFound() {
-        when(clientRepository.findById(1L)).thenReturn(testClient);
-        when(fundRepository.findById(1L)).thenReturn(null);
+        when(clientRepository.findById("1")).thenReturn(testClient);
+        when(fundRepository.findById("1")).thenReturn(null);
 
         BusinessException exception = assertThrows(BusinessException.class, () -> fundService.subscribeToFund(subscriptionRequest));
         assertEquals("Fund not found", exception.getMessage());
@@ -121,9 +121,9 @@ class FundServiceTest {
 
     @Test
     void subscribeToFund_ThrowsException_AlreadySubscribed() {
-        when(clientRepository.findById(1L)).thenReturn(testClient);
-        when(fundRepository.findById(1L)).thenReturn(testFund);
-        when(subscriptionRepository.find(1L, 1L)).thenReturn(new Subscription());  // Suscripción existente
+        when(clientRepository.findById("1")).thenReturn(testClient);
+        when(fundRepository.findById("1")).thenReturn(testFund);
+        when(subscriptionRepository.find("1", "1")).thenReturn(new Subscription());  // Suscripción existente
 
         BusinessException exception = assertThrows(BusinessException.class, () -> fundService.subscribeToFund(subscriptionRequest));
         assertEquals("Client already subscribed to this fund", exception.getMessage());
@@ -133,9 +133,9 @@ class FundServiceTest {
     void subscribeToFund_ThrowsException_InsufficientBalance() {
         testClient.setBalance(400L);  // Menos que minAmount (500)
 
-        when(clientRepository.findById(1L)).thenReturn(testClient);
-        when(fundRepository.findById(1L)).thenReturn(testFund);
-        when(subscriptionRepository.find(1L, 1L)).thenReturn(null);
+        when(clientRepository.findById("1")).thenReturn(testClient);
+        when(fundRepository.findById("1")).thenReturn(testFund);
+        when(subscriptionRepository.find("1", "1")).thenReturn(null);
 
         BusinessException exception = assertThrows(BusinessException.class, () -> fundService.subscribeToFund(subscriptionRequest));
         assertTrue(exception.getMessage().contains("Insufficient balance"));
@@ -144,21 +144,21 @@ class FundServiceTest {
 
     @Test
     void cancelFund_Successful() {
-        Subscription testSubscription = new Subscription(1L, 1L, 500L, "ACTIVE", LocalDate.now());
+        Subscription testSubscription = new Subscription("1", "1", 500L, "ACTIVE", LocalDate.now());
 
-        when(subscriptionRepository.find(1L, 1L)).thenReturn(testSubscription);
-        when(clientRepository.findById(1L)).thenReturn(testClient);
+        when(subscriptionRepository.find("1", "1")).thenReturn(testSubscription);
+        when(clientRepository.findById("1")).thenReturn(testClient);
 
         fundService.cancelFund(cancelRequest);
 
         assertEquals("CANCELLED", testSubscription.getStatus());
         assertEquals(1500L, testClient.getBalance());
-        verify(transactionService).register(1L, 1L, "CANCELLATION", 500L);
+        verify(transactionService).register("1", "1", "CANCELLATION", 500L);
     }
 
     @Test
     void cancelFund_ThrowsException_SubscriptionNotFound() {
-        when(subscriptionRepository.find(1L, 1L)).thenReturn(null);
+        when(subscriptionRepository.find("1", "1")).thenReturn(null);
 
         assertThrows(NullPointerException.class, () -> fundService.cancelFund(cancelRequest));
     }

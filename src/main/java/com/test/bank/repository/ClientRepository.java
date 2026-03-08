@@ -5,7 +5,7 @@ import com.test.bank.model.Client;
 
 public interface ClientRepository {
 
-    Client findById(Long id);
+    Client findById(String id);
 
     void save(Client client);
 }

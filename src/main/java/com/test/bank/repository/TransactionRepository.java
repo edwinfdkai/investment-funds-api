@@ -8,5 +8,5 @@ public interface TransactionRepository {
 
     void save(Transaction transaction);
 
-    List<Transaction> findByClientId(Long clientId);
+    List<Transaction> findByClientId(String clientId);
 }

@@ -49,7 +49,7 @@ public class FundController {
     }
 
     @GetMapping("/{id}/transacciones")
-    public List<Transaction> history(@PathVariable Long id){
+    public List<Transaction> history(@PathVariable String id){
 
         return transactionService.history(id);
     }

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface FundRepository {
 
-    Fund findById(Long id);
+    Fund findById(String id);
 
     void save(Fund fund);
 
