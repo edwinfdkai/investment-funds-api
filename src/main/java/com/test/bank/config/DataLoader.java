@@ -22,7 +22,7 @@ public class DataLoader implements CommandLineRunner {
                 "1",
                 "Edwin Caicedo",
                 "edwinfdfull@gmail.com",
-                "+57300123456",
+                "+573054566127",
                 500000L,
                 "EMAIL"
         );

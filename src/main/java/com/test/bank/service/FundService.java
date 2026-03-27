@@ -56,6 +56,7 @@ public class FundService {
         }
 
         client.setBalance(client.getBalance() - fund.getMinAmount());
+        clientRepository.save(client);
 
         Subscription subscription = new Subscription(
                 client.getId(),
@@ -64,6 +65,8 @@ public class FundService {
                 "ACTIVE",
                 LocalDate.now()
         );
+
+        subscriptionRepository.save(subscription);
 
         if(client.getNotificationPreference().equals("EMAIL")){
 
@@ -79,8 +82,6 @@ public class FundService {
                     client.getPhone()
             );
         }
-
-        subscriptionRepository.save(subscription);
 
         transactionService.register(
                 client.getId(),
@@ -101,6 +102,7 @@ public class FundService {
         Client client = clientRepository.findById(request.getClientId());
 
         client.setBalance(client.getBalance() + subscription.getAmount());
+        clientRepository.save(client);
 
         transactionService.register(
                 client.getId(),
