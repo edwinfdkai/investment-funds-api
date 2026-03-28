@@ -6,11 +6,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.sns.SnsClient;
-import software.amazon.awssdk.services.sns.model.PublishRequest;
 
 import java.util.function.Consumer;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class SmsNotificationServiceTest {
@@ -22,30 +25,23 @@ class SmsNotificationServiceTest {
     private SmsNotificationService smsNotificationService;
 
     @Test
-    void shouldSendSmsSuccessfully() {
-        String message = "Test message";
-        String phone = "+57300123456";
+    void sendNotification_invokesSnsPublish() {
+        smsNotificationService.sendNotification("Test message", "+57300123456");
 
-        smsNotificationService.sendNotification(message, phone);
-
-        verify(snsClient, times(1))
-                .publish((Consumer<PublishRequest.Builder>) any());
+        verify(snsClient).publish(any(Consumer.class));
     }
 
     @Test
-    void shouldThrowExceptionWhenSmsFails() {
-        String message = "Test message";
-        String phone = "+57300123456";
-
+    void sendNotification_wrapsFailureInRuntimeException() {
         doThrow(new RuntimeException("AWS error"))
                 .when(snsClient)
-                .publish((PublishRequest) any());
+                .publish(any(Consumer.class));
 
-        RuntimeException exception = org.junit.jupiter.api.Assertions.assertThrows(
+        RuntimeException exception = assertThrows(
                 RuntimeException.class,
-                () -> smsNotificationService.sendNotification(message, phone)
-        );
+                () -> smsNotificationService.sendNotification("Test message", "+57300123456"));
 
-        assert exception.getMessage().equals("Error sending SMS notification");
+        assertEquals("Error sending SMS notification", exception.getMessage());
+        verify(snsClient).publish(any(Consumer.class));
     }
 }

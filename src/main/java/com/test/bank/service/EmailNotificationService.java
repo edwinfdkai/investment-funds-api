@@ -1,10 +1,12 @@
 package com.test.bank.service;
 
-import com.test.bank.repository.NotificationService;
+import com.test.bank.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.ses.SesClient;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmailNotificationService implements NotificationService {
@@ -21,9 +23,9 @@ public class EmailNotificationService implements NotificationService {
                             .body(b -> b.text(t -> t.data(message))))
                     .source("edwinkaicedosoporte@gmail.com")
             );
-            System.out.println("Email send to: " + email);
+            log.info("Email sent successfully to {}", email);
         } catch (Exception e) {
-            System.err.println("Error send Email: " + e.getMessage());
+            log.error("Failed to send email to {}: {}", email, e.getMessage(), e);
         }
     }
 }

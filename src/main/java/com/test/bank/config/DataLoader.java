@@ -2,6 +2,7 @@ package com.test.bank.config;
 
 import com.test.bank.model.Client;
 import com.test.bank.model.Fund;
+import com.test.bank.model.enums.NotificationPreference;
 import com.test.bank.repository.ClientRepository;
 import com.test.bank.repository.FundRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class DataLoader implements CommandLineRunner {
                 "edwinfdfull@gmail.com",
                 "+573054566127",
                 500000L,
-                "EMAIL"
+                NotificationPreference.EMAIL.getValue()
         );
 
         clientRepository.save(client);

@@ -1,4 +1,4 @@
-package com.test.bank.repository;
+package com.test.bank.notification;
 
 public interface NotificationService {
 

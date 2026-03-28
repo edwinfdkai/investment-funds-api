@@ -6,10 +6,12 @@ import com.test.bank.model.Subscription;
 import com.test.bank.model.Transaction;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.enhanced.dynamodb.*;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class DynamoDBTableInitializer {
@@ -40,7 +42,7 @@ public class DynamoDBTableInitializer {
         try {
             table.createTable();
         } catch (Exception e) {
-            System.out.println("Table already exist: " + tableName);
+            log.warn("Table already exists or could not be created: {} — {}", tableName, e.getMessage());
         }
     }
 }

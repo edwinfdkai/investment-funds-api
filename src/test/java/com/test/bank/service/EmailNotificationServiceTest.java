@@ -6,11 +6,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.services.ses.SesClient;
-import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 
 import java.util.function.Consumer;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class EmailNotificationServiceTest {
@@ -22,28 +23,20 @@ class EmailNotificationServiceTest {
     private EmailNotificationService emailNotificationService;
 
     @Test
-    void shouldSendEmailSuccessfully() {
-        String message = "Test message";
-        String email = "test@mail.com";
+    void sendNotification_invokesSesSendEmail() {
+        emailNotificationService.sendNotification("Test message", "test@mail.com");
 
-        emailNotificationService.sendNotification(message, email);
-
-        verify(sesClient, times(1))
-                .sendEmail((Consumer<SendEmailRequest.Builder>) any());
+        verify(sesClient).sendEmail(any(Consumer.class));
     }
 
     @Test
-    void shouldHandleExceptionWhenEmailFails() {
-        String message = "Test message";
-        String email = "test@mail.com";
-
+    void sendNotification_swallowsSesFailureAfterLogging() {
         doThrow(new RuntimeException("AWS error"))
                 .when(sesClient)
-                .sendEmail((Consumer<SendEmailRequest.Builder>) any());
+                .sendEmail(any(Consumer.class));
 
-        emailNotificationService.sendNotification(message, email);
+        emailNotificationService.sendNotification("Test message", "test@mail.com");
 
-        verify(sesClient, times(1))
-                .sendEmail((Consumer<SendEmailRequest.Builder>) any());
+        verify(sesClient).sendEmail(any(Consumer.class));
     }
 }
